@@ -9,17 +9,17 @@ class Settings:
     mutation_rate = 0.06
     """Вероятность мутации"""
 
-    population_size = 10
+    population_size = 200
     """Размер популяции в поколении"""
     number_of_generations = 100
     """Число поколений"""
 
     departure_vertex = 0
     """Стартовая вершина"""
-    destination_vertex = 20
+    destination_vertex = 1
     """Конечная вершина"""
 
-    chromosome_length = 30
+    chromosome_length = 10
     """Длина хромосомы"""
     crossover_strategy: CrossoverStrategy = "best_no_repeat"
     """Стратегия (вариант) скрещивания"""
@@ -27,15 +27,13 @@ class Settings:
     """Стратегия (вариант) мутации"""
 
     @property
-    @staticmethod
-    def matrix():
+    def matrix(self):
         """Матрица, динамически загружаемая из файла"""
         with open("./MATRIX.json", "r") as f:
             res: list[list[int]] = json.loads(f.read())
         return res
 
     @property
-    @staticmethod
-    def matrix_length():
+    def matrix_length(self):
         with open("./MATRIX.json", "r") as f:
             return len(json.loads(f.read()))

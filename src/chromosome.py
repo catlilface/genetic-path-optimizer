@@ -1,7 +1,7 @@
 from random import choice, randint
-from typing import Literal
+from typing import Literal, TypedDict
 
-from src.constants import Settings
+from src.settings import Settings
 
 
 class Chromosome:
@@ -12,7 +12,7 @@ class Chromosome:
     ):
         self.length = settings.chromosome_length
         self.num_of_vertices = settings.matrix_length
-        self.start = settings.destination_vertex
+        self.start = settings.departure_vertex
         self.end = settings.destination_vertex
 
         if genes is None:
@@ -41,18 +41,15 @@ class Chromosome:
                 self.mutate(choice(["inversion", "random_swap", "neighbor_swap"]))
 
     def random_swap(self):
-        print("random swap!")
-
         variable_length = len(self.variable_part)
         i = randint(0, variable_length - 1)
-        vertex = randint(0, self.num_of_vertices - 1)
+        vertex = randint(0, variable_length - 1)
 
         self.variable_part[i] = vertex
 
     def neighbor_swap(self):
-        print("neighbor swap!")
         variable_length = len(self.variable_part)
-        i = randint(0, variable_length - 1)
+        i = randint(0, variable_length - 2)
 
         self.variable_part[i], self.variable_part[i + 1] = (
             self.variable_part[i + 1],
@@ -60,9 +57,8 @@ class Chromosome:
         )
 
     def inversion(self):
-        print("inversion!")
         variable_length = len(self.variable_part)
-        i = randint(0, self.num_of_vertices - 1)
+        i = randint(0, variable_length - 1)
 
         self.variable_part[i], self.variable_part[variable_length - 1 - i] = (
             self.variable_part[variable_length - 1 - i],
@@ -124,3 +120,8 @@ class Chromosome:
     @property
     def genes(self):
         return [self.start, *self.variable_part, self.end]
+
+
+class Loss(TypedDict):
+    chromosome: Chromosome
+    loss: int
