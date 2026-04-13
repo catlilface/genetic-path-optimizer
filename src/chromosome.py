@@ -1,3 +1,15 @@
+"""
+Теоретические основы искуственного интеллекта
+Лабораторная работа №1
+
+URL: https://online.mospolytech.ru/local/crw/course.php?id=14927
+
+Автор: Климов Александр Олегович
+Email: aleklim98@gmail.com
+
+2026
+"""
+
 from random import choice, randint
 from typing import Literal, TypedDict
 
@@ -5,6 +17,8 @@ from src.settings import Settings
 
 
 class Chromosome:
+    """Класс хромосомы"""
+
     def __init__(
         self,
         settings: Settings,
@@ -21,8 +35,6 @@ class Chromosome:
             ]
 
         self.variable_part = genes
-
-    def __add__(self, other): ...
 
     def mutate(
         self,
