@@ -14,6 +14,13 @@ from src.chromosome import Chromosome
 
 
 def loss_function(chromosome: Chromosome, matrix: list[list[int]]) -> int:
+    """
+    Функция потерь
+
+    Returns:
+        path_length (int): общая длина пути по нодам из хромосомы в матрице
+    """
+
     path_length = 0
     for index, gene in enumerate(chromosome, start=1):
         if index == len(chromosome):

@@ -34,6 +34,8 @@ class Chromosome:
                 randint(0, self.num_of_vertices - 1) for _ in range(self.length - 2)
             ]
 
+        # Изменяемая часть - это часть хромосомы, которая подвержена мутациям
+        # и кроссоверу. Первый и последний ген (вершины) не могут меняться
         self.variable_part = genes
 
     def mutate(
@@ -42,6 +44,17 @@ class Chromosome:
             "inversion", "random_swap", "neighbor_swap", "random"
         ] = "random",
     ):
+        """
+        Метод мутации хромосомы
+
+        Args:
+            variant (str): Вариант мутации. Поддерживается 4 варианта:
+                - inversion: Инверсия. Взаимное перемещение зеркальных элементов
+                - random_swap: Случайное изменение. Вершина в хромосоме меняется на случайную в матрице
+                - neighbor_swap: Взаимное перемещение соседних генов
+                - random: Случайный выбор и описанных выше
+        """
+
         match variant:
             case "inversion":
                 self.inversion()
@@ -53,6 +66,8 @@ class Chromosome:
                 self.mutate(choice(["inversion", "random_swap", "neighbor_swap"]))
 
     def random_swap(self):
+        """Случайная замена вершины"""
+
         variable_length = len(self.variable_part)
         i = randint(0, variable_length - 1)
         vertex = randint(0, variable_length - 1)
@@ -60,6 +75,8 @@ class Chromosome:
         self.variable_part[i] = vertex
 
     def neighbor_swap(self):
+        """Взаимное перемещение соседних генов"""
+
         variable_length = len(self.variable_part)
         i = randint(0, variable_length - 2)
 
@@ -69,6 +86,8 @@ class Chromosome:
         )
 
     def inversion(self):
+        """Мутация инверсии"""
+
         variable_length = len(self.variable_part)
         i = randint(0, variable_length - 1)
 
@@ -78,6 +97,7 @@ class Chromosome:
         )
 
     def __len__(self):
+        """Общее число генов в хромосоме"""
         return len(self.genes)
 
     def __repr__(self) -> str:
@@ -90,9 +110,14 @@ class Chromosome:
         return self.genes[index]
 
     def __xor__(self, other):
+        """Метод для скрещивания хромосом"""
+
+        # Вычисление точек кроссовера
         crossover_breakpoints = [
             randint(0, len(self.variable_part) - 1)
-            for _ in range(len(self.variable_part) // 2)
+            for _ in range(
+                len(self.variable_part) // 2
+            )  # Число точек не может быть больше половины от изменяемой части
         ]
         crossover_breakpoints = set(crossover_breakpoints)
         crossover_breakpoints = sorted([*crossover_breakpoints])
@@ -101,6 +126,7 @@ class Chromosome:
         result_a = []
         result_b = []
         for i in range(len(crossover_breakpoints)):
+            # При скрещивании хромосомы должны поменяться генами в "зеркальных" участках
             if i % 2 == 0:
                 result_a.extend(
                     self.variable_part[current_position : crossover_breakpoints[i]]
@@ -116,17 +142,24 @@ class Chromosome:
                     self.variable_part[current_position : crossover_breakpoints[i]]
                 )
 
+            # После обмена участками обновляем позицию.
+            # Последняя часть участка - это первая часть нового участка.
             current_position = crossover_breakpoints[i]
 
+        # После скрещивания остается последний участок, которому не назначен брекпоинт.
+        # Добавляем его в хромосомы
         result_a.extend(self.variable_part[current_position:])
         result_b.extend(other.variable_part[current_position:])
 
-        return Chromosome(
-            settings=Settings(),
-            genes=result_a,
-        ), Chromosome(
-            settings=Settings(),
-            genes=result_b,
+        return (
+            Chromosome(
+                settings=Settings(),
+                genes=result_a,
+            ),
+            Chromosome(
+                settings=Settings(),
+                genes=result_b,
+            ),
         )
 
     @property
@@ -135,5 +168,7 @@ class Chromosome:
 
 
 class Loss(TypedDict):
+    """Класс "лосса" """
+
     chromosome: Chromosome
     loss: int
